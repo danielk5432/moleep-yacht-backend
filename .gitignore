@@ -1,5 +1,40 @@
-# Dependencies
-/node_modules
+# node_modules는 Git에 올리지 않음
+node_modules/
 
-# Environment variables
+# 빌드 결과물 제외
+dist/
+build/
+
+# 환경 변수 파일 (개인 정보 포함 가능)
 .env
+.env.* 
+
+# 로그 파일
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS 시스템 파일
+.DS_Store
+
+# IDE/에디터 설정 파일
+.vscode/
+.idea/
+
+# TypeScript 빌드 캐시
+*.tsbuildinfo
+
+# 기타
+coverage/  # 테스트 커버리지 결과
+
+# 📦 패키지 매니저 관련
+node_modules/
+
+# ⚙️ Next.js 및 빌드 결과물
+.next/
+dist/
+
+# 📝 로그 및 캐시 파일
+*.log
+*.cache
+*.lock.json
