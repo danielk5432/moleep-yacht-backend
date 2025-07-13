@@ -1,39 +1,32 @@
 {
   "name": "moleep-yacht-backend",
   "version": "1.0.0",
-  "description": "madcamp 2025 summer",
-  "main": "index.js",
+  "description": "madcamp 2025 summer - Next.js Backend",
+  "private": true,
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/danielk5432/moleep-yacht-backend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/danielk5432/moleep-yacht-backend/issues"
-  },
-  "homepage": "https://github.com/danielk5432/moleep-yacht-backend#readme",
-  "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.0.13",
-    "@types/jsonwebtoken": "^9.0.7",
-    "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "dev": "next dev -p 8443",
+    "build": "next build",
+    "start": "next start -p 8443",
+    "lint": "next lint"
   },
   "dependencies": {
+    "next": "^15.3.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
-    "express": "^5.1.0",
     "mongodb": "^6.17.0",
     "google-auth-library": "^9.14.1",
     "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^24.0.13",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.5",
+    "typescript": "^5.8.3"
   }
 }
