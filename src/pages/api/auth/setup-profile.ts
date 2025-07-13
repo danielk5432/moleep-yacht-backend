@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  if (req.method !== 'GET') {
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -48,37 +48,64 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(authResult.status).json({ error: authResult.error });
   }
 
-  const user = authResult.user as JWTPayload;
+  // user가 undefined인지 확인
+  if (!authResult.user) {
+    return res.status(401).json({ error: 'User not found in token' });
+  }
+
+  const { nickname } = req.body;
   
+  if (!nickname || nickname.trim().length < 2) {
+    return res.status(400).json({ error: 'Nickname must be at least 2 characters long' });
+  }
+
   try {
-    // MongoDB에서 최신 사용자 정보 가져오기
     const client = new MongoClient(MONGODB_URI);
     await client.connect();
-    
+
     const db = client.db('yacht_game');
     const usersCollection = db.collection('users');
     
-    const userData = await usersCollection.findOne({ googleId: user.id });
+    // 사용자 정보 업데이트
+    await usersCollection.updateOne(
+      { googleId: authResult.user.id },
+      {
+        $set: {
+          nickname: nickname.trim(),
+          profileSetup: true,
+          updatedAt: new Date()
+        }
+      }
+    );
+
     await client.close();
-    
-    res.json({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      nickname: userData?.nickname || null,
-      profileSetup: userData?.profileSetup || false
+
+    // 새로운 JWT 토큰 생성 (닉네임 포함)
+    const newToken = jwt.sign(
+      {
+        id: authResult.user.id,
+        email: authResult.user.email,
+        name: authResult.user.name,
+        picture: authResult.user.picture,
+        nickname: nickname.trim()
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({ 
+      success: true, 
+      token: newToken,
+      user: {
+        id: authResult.user.id,
+        email: authResult.user.email,
+        name: authResult.user.name,
+        picture: authResult.user.picture,
+        nickname: nickname.trim()
+      }
     });
   } catch (error) {
-    console.error('Profile fetch error:', error);
-    // MongoDB 연결 실패 시에도 기본 사용자 정보 반환
-    res.json({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      nickname: null,
-      profileSetup: false
-    });
+    console.error('Profile setup error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 } 

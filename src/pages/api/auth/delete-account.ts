@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  if (req.method !== 'GET') {
+  if (req.method !== 'DELETE') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -48,37 +48,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(authResult.status).json({ error: authResult.error });
   }
 
-  const user = authResult.user as JWTPayload;
-  
+  // user가 undefined인지 확인
+  if (!authResult.user) {
+    return res.status(401).json({ error: 'User not found in token' });
+  }
+
   try {
-    // MongoDB에서 최신 사용자 정보 가져오기
     const client = new MongoClient(MONGODB_URI);
     await client.connect();
-    
+
     const db = client.db('yacht_game');
     const usersCollection = db.collection('users');
     
-    const userData = await usersCollection.findOne({ googleId: user.id });
-    await client.close();
+    // 사용자 계정 삭제
+    const result = await usersCollection.deleteOne({ googleId: authResult.user.id });
     
-    res.json({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      nickname: userData?.nickname || null,
-      profileSetup: userData?.profileSetup || false
+    await client.close();
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Account deleted successfully' 
     });
   } catch (error) {
-    console.error('Profile fetch error:', error);
-    // MongoDB 연결 실패 시에도 기본 사용자 정보 반환
-    res.json({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      nickname: null,
-      profileSetup: false
-    });
+    console.error('Account deletion error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 } 
