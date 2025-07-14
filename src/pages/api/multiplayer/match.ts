@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (matchData) {
       // 매칭된 플레이어들을 대기열에서 제거
-      matchData.players.forEach(player => {
+      matchData.players.forEach((player: any) => {
         removeMatchedPlayer(player.id);
       });
 

@@ -88,7 +88,7 @@ export const tryMatch = () => {
 
 export const getPlayerMatch = (playerId: string) => {
   // 해당 플레이어의 매치 데이터를 찾기 위해 playerId가 포함된 키를 찾음
-  for (const [key, matchData] of activeMatches.entries()) {
+  for (const [key, matchData] of Array.from(activeMatches.entries())) {
     if (key.includes(playerId)) {
       return matchData;
     }
