@@ -4,6 +4,12 @@ export const GOOD_DICE_DATA = ['456Dice', 'OneMoreDice', 'HighDice', 'WildDice']
 export const BAD_DICE_DATA = ['123Dice', 'OneMinusDice', 'RiskDice'];
 export const COMMON_DICE_DATA = ['1or6Dice', 'ConstantDice', 'OddDice', 'EvenDice'];
 
+export const CATEGORIES = [
+  'Ones', 'Twos', 'Threes', 'Fours', 'Fives', 'Sixes',
+  'Choice', 'Four of a Kind', 'Full House', 'Little Straight', 'Big Straight', 'Yacht'
+];
+
+
 // --- 전역 상태 ---
 const waitingPlayers = [];
 const activeMatches = new Map();
@@ -19,15 +25,27 @@ export const addToQueue = (player) => {
 export const tryMatchMaking = () => {
   if (waitingPlayers.length < 4) return null;
 
-  const matchedPlayers = waitingPlayers.splice(0, 4);
+  const matchedPlayers = waitingPlayers.splice(0, 4).map(player => {
+    // ✅ 각 플레이어의 점수판을 null로 초기화합니다.
+    const initialScores = {};
+    CATEGORIES.forEach(cat => {
+      initialScores[cat] = null;
+    });
+    return { ...player, scores: initialScores };
+  });
+  
   const roomId = `room_${Date.now()}`;
   const initialDicePool = createDicePool(matchedPlayers);
-
+  const initialGoodDiceCounts = {};
+  GOOD_DICE_DATA.forEach(diceName => {
+    initialGoodDiceCounts[diceName] = initialDicePool.filter(d => d === diceName).length;
+  });
   const newMatch = { 
     roomId, 
     players: matchedPlayers, 
-    dicePool: initialDicePool, 
-    selectedPool: [], 
+    dicePool: initialDicePool,
+    goodDiceCounts: initialGoodDiceCounts,
+    roulettePool: [[], [], [], []],
     createdAt: new Date() 
   };
   activeMatches.set(roomId, newMatch);
