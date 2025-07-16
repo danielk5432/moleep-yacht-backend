@@ -40,6 +40,7 @@ export const tryMatchMaking = () => {
   GOOD_DICE_DATA.forEach(diceName => {
     initialGoodDiceCounts[diceName] = initialDicePool.filter(d => d === diceName).length;
   });
+  
   const newMatch = { 
     roomId, 
     players: matchedPlayers, 

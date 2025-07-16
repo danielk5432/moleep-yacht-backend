@@ -71,10 +71,6 @@ io.on("connection", (socket) => {
         }
       });
       io.to(matchData.roomId).emit('matchmaking:matched', matchData);
-      GOOD_DICE_DATA.forEach(diceName => {
-        const count = matchData.dicePool.filter((d:string) => d === diceName).length;
-        goodDiceCounts[diceName] = count;
-      });
     } else {
       socket.emit('matchmaking:waiting');
     }
@@ -174,7 +170,7 @@ io.on("connection", (socket) => {
     if (isGoodDice) {
       // 좋은 주사위는 소모됨 (복원하지 않음)
       console.log(`   - '${selectedDie}' is a good die and was consumed.`);
-      goodDiceCounts[selectedDie] -= 1;
+      matchData.goodDiceCounts[selectedDie] -= 1;
       updateGoodDiceCount(io, roomId); // 좋은 주사위 개수 변경 알림
     } else {
       // 좋은 주사위가 아니면 다시 주사위 풀에 복원
@@ -211,6 +207,6 @@ httpServer.listen(PORT, () => {
 function updateGoodDiceCount(io: Server, roomId: string) {
     const matchData = getMatchByRoomId(roomId);
     if (!matchData) return;
-    console.log(`Broadcasting good dice counts for room ${roomId}:`, goodDiceCounts);
-    io.to(roomId).emit('game:goodDiceUpdate', goodDiceCounts);
+    console.log(`Broadcasting good dice counts for room ${roomId}:`, matchData.goodDiceCounts);
+    io.to(roomId).emit('game:goodDiceUpdate', matchData.goodDiceCounts);
 }
