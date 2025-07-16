@@ -8,7 +8,7 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 
-import { currentConfig } from '../../../../config/oauth';
+import { currentConfig } from '../../../../config/oauth.js';
 
 const oauth2Client = new OAuth2Client(
   GOOGLE_CLIENT_ID,

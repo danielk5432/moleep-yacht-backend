@@ -5,13 +5,20 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev:next": "next dev -p 8443",
-    "dev:socket": "node --loader ts-node/esm src/socketServer.ts",
-    "dev": "concurrently \"npm run dev:next\" \"npm run dev:socket\"",
-    "build": "next build",
-    "start": "next start -p 8443",
-    "lint": "next lint"
-  },
+      "dev:next": "next dev -p 8443",
+      "dev:socket": "node --loader ts-node/esm src/socketServer.ts",
+      "dev": "concurrently \"npm:dev:next\" \"npm:dev:socket\"",
+      
+      "build:next": "next build",
+      "build:socket": "tsc --project tsconfig.socket.json",
+      "build": "concurrently \"npm:build:next\" \"npm:build:socket\"",
+
+      "start:next": "next start -p 8443",
+      "start:socket": "node dist/socketServer.js",
+      "start": "concurrently \"npm:start:next\" \"npm:start:socket\"",
+
+      "lint": "next lint"
+    },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",

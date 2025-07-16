@@ -4,12 +4,18 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { 
-    Player, 
     addToQueue, 
     tryMatchMaking,
     getMatchByRoomId,
     GOOD_DICE_DATA,
-} from './pages/api/multiplayer/match-state.ts'; // 상태 관리 로직 import
+} from './match-state.js'; // 상태 관리 로직 import
+
+interface Player {
+    id: string;
+    nickname: string;
+    joinedAt: Date;
+    goodDiceRecord: Record<string, number>; // 주사위 기록
+}
 
 const app = express();
 const httpServer = createServer(app);

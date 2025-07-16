@@ -1,13 +1,13 @@
 import { NextPage } from 'next';
-import Head from 'next/head';
+import type { Metadata } from 'next';
 
 const Home: NextPage = () => {
   return (
     <>
-      <Head>
+      <h1>
         <title>야추 게임 백엔드 - YYacht</title>
         <meta name="description" content="야추 게임 백엔드 API 서버" />
-      </Head>
+      </h1>
       
       <div style={{ 
         display: 'flex', 

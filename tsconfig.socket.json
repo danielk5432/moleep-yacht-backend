@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "outDir": "./dist",
+    "noEmit": false,
+    "isolatedModules": false
+  },
+  "include": ["src/socketServer.ts", "src/match-state.ts"]
+}

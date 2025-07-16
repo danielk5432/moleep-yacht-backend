@@ -4,7 +4,7 @@ import { OAuth2Client } from 'google-auth-library';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 
-import { currentConfig } from '../../../config/oauth';
+import { currentConfig } from '../../../config/oauth.js'; // 경로를 실제 config 파일 위치에 맞게 조정하세요
 
 const oauth2Client = new OAuth2Client(
   GOOGLE_CLIENT_ID,
