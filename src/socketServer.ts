@@ -79,6 +79,14 @@ io.on("connection", (socket) => {
   // --- 게임 진행 관련 이벤트 핸들러 ---
   // src/socketServer.ts 파일의 io.on("connection", ...) 블록 안에 추가하세요.
 
+  socket.on('game:requestInitialData', (roomId: string, callback: (response: { matchData?: any }) => void) => {
+    const matchData = getMatchByRoomId(roomId);
+    if (matchData) {
+      console.log(`[Backup] Player ${socket.id} requested initial data for room ${roomId}. Sending.`);
+      callback({ matchData });
+    }
+  });
+
   socket.on('roulette:getDice', (
     roomId: string, 
     playerId: string, // 누가 요청했는지 식별하기 위한 인자 추가
@@ -184,7 +192,31 @@ io.on("connection", (socket) => {
     console.log(`   - Dice pool now has ${matchData.dicePool.length} dice.`);
   }); 
 
-  socket.on('score:update', (data) => { /* ... */ });
+  socket.on('score:update', (data: {
+    roomId: string, 
+    playerId: string,
+    category: string,
+    score: number
+  }) => { 
+    const { roomId, playerId, category, score } = data;
+    const matchData = getMatchByRoomId(roomId);
+    if (!matchData) return;
+    
+    // 닉네임을 찾기 위해 player 정보는 필요
+    const player = matchData.players.find((p: Player) => p.id === playerId);
+    if (!player) return;
+
+    console.log(`[Broadcast] Relaying score update in Room: ${roomId}`);
+
+    // ❗ 저장 로직 없이 바로 모든 클라이언트에게 받은 정보를 전달만 합니다.
+    io.to(roomId).emit('score:updated', {
+      playerId,
+      category,
+      score,
+      nickname: player.nickname, // 닉네임은 보내주기 위해 조회
+    });
+  });
+
   socket.on('leaveQueue', () => { /* ... */ });
 
   // 3. 연결 종료 처리
