@@ -1,24 +1,24 @@
 // pages/api/socket.ts
 
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { 
     Player, 
     addToQueue, 
-    tryMatchMaking, // tryMatchMaking을 직접 호출하도록 변경
-    getMatchByRoomId, 
+    tryMatchMaking,
+    getMatchByRoomId, // ✅ import 추가
     GOOD_DICE_DATA
-} from './match-state.js';
+} from './multiplayer/match-state.ts';
 import type { Server as HTTPServer } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type { Server as IOServer } from 'socket.io';
 
-// --- 타입 정의 (기존과 동일) ---
+// --- 타입 정의 ---
 interface SocketServer extends HTTPServer { io?: IOServer | undefined; }
 interface SocketWithIO extends NetSocket { server: SocketServer; }
 interface NextApiResponseWithSocket extends NextApiResponse { socket: SocketWithIO; }
 
-// --- 플레이어 ID와 소켓 ID를 매핑하기 위한 전역 맵 ---
+// --- 전역 맵 ---
 const playerSocketMap = new Map<string, string>();
 
 export default function socketHandler(req: NextApiRequest, res: NextApiResponseWithSocket) {
@@ -82,15 +82,14 @@ export default function socketHandler(req: NextApiRequest, res: NextApiResponseW
 
             socket.on('disconnect', () => {
                 // 연결이 끊어지면 맵에서 해당 플레이어 제거
-                for (const [playerId, socketId] of playerSocketMap.entries()) {
+                playerSocketMap.forEach((socketId, playerId) => {
                     if (socketId === socket.id) {
-                        playerSocketMap.delete(playerId);
-                        console.log(`Player ${playerId} unregistered.`);
-                        break;
+                    playerSocketMap.delete(playerId);
+                    console.log(`Player ${playerId} unregistered.`);
                     }
-                }
+                });
                 console.log(`Socket disconnected: ${socket.id}`);
-            });
+                });
         });
     }
     res.end();

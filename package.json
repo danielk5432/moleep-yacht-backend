@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "madcamp 2025 summer - Next.js Backend",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev:next": "next dev -p 8443",
-    "dev:socket": "ts-node src/socketServer.ts",
+    "dev:socket": "node --loader ts-node/esm src/socketServer.ts",
     "dev": "concurrently \"npm run dev:next\" \"npm run dev:socket\"",
     "build": "next build",
     "start": "next start -p 8443",
